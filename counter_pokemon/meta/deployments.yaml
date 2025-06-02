@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pokemon
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counter-pokemon-app
+  namespace: pokemon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: counter-pokemon-app
+  template:
+    metadata:
+      labels:
+        app: counter-pokemon-app
+    spec:
+      containers:
+      - name: counter-pokemon-app
+        image: counter-pokemon-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: counter-pokemon-service
+  namespace: pokemon
+spec:
+  selector:
+    app: counter-pokemon-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: LoadBalancer
+

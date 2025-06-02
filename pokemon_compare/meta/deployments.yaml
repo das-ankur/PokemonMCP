@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pokemon
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pokemon-compare-app
+  namespace: pokemon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pokemon-compare-app
+  template:
+    metadata:
+      labels:
+        app: pokemon-compare-app
+    spec:
+      containers:
+      - name: pokemon-compare-app
+        image: pokemon-compare-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pokemon-compare-service
+  namespace: pokemon
+spec:
+  selector:
+    app: pokemon-compare-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: LoadBalancer

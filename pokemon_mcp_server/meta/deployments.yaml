@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pokemon
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pokemon-mcp-app
+  namespace: pokemon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pokemon-mcp-app
+  template:
+    metadata:
+      labels:
+        app: pokemon-mcp-app
+    spec:
+      containers:
+      - name: pokemon-mcp-app
+        image: pokemon-mcp-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pokemon-mcp-service
+  namespace: pokemon
+spec:
+  selector:
+    app: pokemon-mcp-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: LoadBalancer
